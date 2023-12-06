@@ -4,8 +4,8 @@ import (
 	"bufio"
 	"log"
 	"os"
-	"strings"
 	"strconv"
+	"strings"
 )
 
 func readFileLines(filePath string) ([]string, error) {
@@ -92,18 +92,59 @@ func processLinePart1(lineb string, line string, linea string) int {
 
 
 		}
-		log.Printf("Number(%t): %s\n", charFound, line[numberIndexRange[0]:numberIndexRange[1]+1])
+		// log.Printf("Number(%t): %s\n", charFound, line[numberIndexRange[0]:numberIndexRange[1]+1])
 		if charFound {
 			r, _ := strconv.Atoi(string(line[numberIndexRange[0]:numberIndexRange[1]+1]))
 			result += r
 			charFound = false
 		} 
 	}
-	println("####")
-	println(lineb)
-	println(line)
-	println(linea)
-	println("####")
+	// println("####")
+	// println(lineb)
+	// println(line)
+	// println(linea)
+	// println("####")
+	return result
+}
+
+func processLinePart2(lineb string, line string, linea string, numberPos [][][]int) int {
+	result := 0
+	listInt := []int{}
+
+	for i, s := range line {
+		if s == '*' {
+			for _, numberIndexRange := range numberPos[0] {
+				if numberIndexRange[0]-1 <= i && numberIndexRange[1]+1 >= i {
+					v, _ := strconv.Atoi(string(lineb[numberIndexRange[0]:numberIndexRange[1]+1]))
+					listInt = append(listInt, v)
+				}
+			}
+
+			for _, numberIndexRange := range numberPos[1] {
+				if numberIndexRange[0]-1 <= i && numberIndexRange[1]+1 >= i {
+					v, _ := strconv.Atoi(string(line[numberIndexRange[0]:numberIndexRange[1]+1]))
+					listInt = append(listInt, v)
+				}
+			}
+
+			for _, numberIndexRange := range numberPos[2] {
+				if numberIndexRange[0]-1 <= i && numberIndexRange[1]+1 >= i {
+					v, _ := strconv.Atoi(string(linea[numberIndexRange[0]:numberIndexRange[1]+1]))
+					listInt = append(listInt, v)
+				}
+			}
+
+			if len(listInt) > 2 {
+				println(listInt)
+				log.Panicln("More than two numbers found for a gear")
+			} else {
+				if len(listInt) == 2 {
+					result += listInt[0] * listInt[1]
+				}
+				listInt = []int{}
+			}
+		}
+	}
 	return result
 }
 
@@ -126,8 +167,32 @@ func part1(file string) {
 	log.Printf("Result: %d", result)
 }
 
+func part2(file string) {
+	log.Printf("####### Part 2: %s #######", file)
+	lines, _ := readFileLines(file)
+	emptyLine := strings.Repeat(".", len(lines[0]))
+	numberPosition := [][][]int{}
+	result := 0
+
+	// Append empty lines to allow processing each line surrounded by two othe lines
+	// Makes easier to apply same function to first and last line
+	lines = append([]string{emptyLine}, lines...)
+	lines = append(lines, emptyLine)
+
+	for i := 0; i < len(lines); i++ {
+		numberPosition = append(numberPosition, getLineNumbers(lines[i]))
+	}
+
+	for i := 1; i < len(lines)-1; i++ {
+		result += processLinePart2(lines[i-1], lines[i], lines[i+1], numberPosition[i-1:i+2])
+	}
+
+	log.Printf("Result: %d", result)
+}
+
 func run(file string) {
 	part1(file)
+	part2(file)
 }
 
 func main() {
