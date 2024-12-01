@@ -1,12 +1,22 @@
-# Advent of Code 2023
+# Advent of Code
 
-Language: Golang
+This repo serves as an archive for my implementations on the _Advent of Code_
+challenges.
 
-1 folder per calendar day
+## Executing code
 
-## How to run
+Typically unless specified otherwise the code should be contained within a single
+file.
 
-Go into any day folder and run 
+### Language: Golang
+
 ```
-go run main.go
+go run <file>.go
 ```
+
+### Language: Clojure
+
+```
+clojure -M <file>.clj
+```
+
